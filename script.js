@@ -61,95 +61,59 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// LECTURES
+const displayMovements = function (movements) {
+  containerMovements.innerHTML = ''; //.textContent = 0 hace lo mismo!
+  movements.forEach(function (mov, i) {
+    const type = mov > 0 ? 'deposit' : 'withdrawal';
+    const html = `  
+    <div class="movements__row">
+      <div class="movements__type movements__type--${type}">${
+      i + 1
+    } ${type}</div>
+      <div class="movements__value">${mov}€</div>
+  </div>`;
+    containerMovements.insertAdjacentHTML('afterbegin', html);
+  });
+};
 
+displayMovements(account1.movements);
 
+const calcDisplayBalance = function (movements) {
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${balance}€`;
+};
+calcDisplayBalance(account1.movements);
 
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+const calcDisplaySummary = function (movements) {
+  const income = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${income}€`;
+  const out = movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(out)}€`;
+  const interest = movements
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * 1.2) / 100)
+    .filter((int, i, arr) => {
+      console.log(arr);
+      return int >= 1;
+    })
+    .reduce((acc, int) => acc + int, 0);
+  labelSumInterest.textContent = `${interest}€`;
+};
+calcDisplaySummary(account1.movements);
 
-/////////////////////////////////////////////////
+const createUsernames = function (accs) {
+  accs.forEach(function (acc) {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
+};
 
-// let arr = ['a', 'b', 'c', 'd', 'e'];
-
-// ------------- SLICE METHOD, NO CAMBIA EL ARRAY ORIGINAL ------------------
-
-// console.log(arr.slice(2));
-// console.log(arr.slice(2, 4));
-// console.log(arr.slice(-2));
-// console.log(arr.slice(1, -2));
-// console.log(arr.slice()); // CREA UNA COPIA DEL ARRAY
-// console.log([...arr]); // CREA UNA COPIA DEL ARRAY
-
-// // ----------SPLICE METHOD - CAMBIA EL ARRAY ORIGINAL --------------------------
-
-// // console.log(arr.splice(2));
-// arr.splice(-1); // Elimina un elemento del array
-// arr.splice(1, 2); // el segundo numero corresponde a la cantidad de elementos que quiero borrar, no a la posición.)
-// console.log(arr);
-
-// // ------ REVERSE ----------------------------
-
-// let arr1 = ['a', 'b', 'c', 'd', 'e'];
-
-// const arr2 = ['j', 'i', 'h', 'g', 'f'];
-
-// console.log(arr2.reverse());
-// console.log(arr2); // Muta el array original
-
-// // ------ CONCAD METHOD ----------------
-
-// const letters = arr1.concat(arr2);
-// console.log(letters);
-
-// console.log([...arr1, ...arr2]);
-
-// // ------- JOIN -----------------------
-// console.log(letters.join('-'));
-
-// // ejemplo
-
-// const months = ['Jan', 'March', 'April', 'June'];
-// months.splice(1, 0, 'Feb');
-// // inserts at index 1
-// console.log(months);
-// // expected output: Array ["Jan", "Feb", "March", "April", "June"]
-
-// ----------------- FOR EACH ----------------------------
-
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300]; // POSITIVOS SON DEPOSITOS EFECTIVO Y NEGATIVOS SON RETIROS DE EFECTIVO
-
-// // for (const movement of movements) {
-// for (const [i, movement] of movements.entries()) {
-//   if (movement > 0){
-//     console.log(`Movement ${i + 1}: Depositadaste ${movement}`); 
-//   } else {
-//     console.log(`Movement ${i + 1}: Retiraste ${Math.abs(movement)}`);
-//   }
-// }
-
-// console.log('************ FOR EACH **********************')
-
-// movements.forEach(function(movement, index, array) {
-//   if (movement > 0){
-//     console.log(`Movement ${index + 1}: Depositadaste ${movement}`); 
-//   } else {
-//     console.log(`Movement ${index + 1}: Retiraste ${Math.abs(movement)}`);
-//   }
-// })
-
-// *************************** maps & sets
-
-// const currencies = new Map([
-//   ['USD', 'United States dollar'],
-//   ['EUR', 'Euro'],
-//   ['GBP', 'Pound sterling'],
-// ]);
-
-// currencies.forEach(function(value, key, map){
-//   console.log(`${key}, ${value}`);
-// })
-
-// ---------- SET -------------------
-
+createUsernames(accounts);
+console.log(accounts); // User name stw
